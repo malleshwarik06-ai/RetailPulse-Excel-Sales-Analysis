@@ -1,94 +1,81 @@
-# 📚 Library Reservation System: Software Design
+# RetailPulse – Global Sales Analysis 2022–2025 (Excel)
 
-**CS5721 Software Design · MSc Software Engineering · University of Limerick**
+An end-to-end Excel project: cleaning a messy sales dataset, analysing it with formulas and PivotTables, and presenting the results in an interactive dashboard.
 
-A complete object-oriented design for an academic library system that lets students and staff search, reserve, borrow and return books, while librarians manage the catalogue, approvals and reservation queues. The project covers the full design process: requirements, UML modelling, architecture, design patterns and Java code fragments.
+![RetailPulse Dashboard](RetailPulse_Dashboard.png)
 
----
+## Project goal
+Turn 18,045 raw sales records into clean, trustworthy data and answer four business questions:
+1. Which regions and product categories drive sales and profit?
+2. Did sales grow from 2022 to 2025?
+3. Which months are busiest and quietest?
+4. Is profitability (margin) consistent across the business?
 
-## 🎯 Problem
+## Dataset
+- **18,045 rows × 23 columns**: orders, dates, customers, region/city, category/product, price, quantity, discount, sales, cost, profit, payment, status, channel, promo code
+- **Period:** January 2022 – December 2025
+- Synthetic practice dataset, built with realistic data-quality problems included on purpose
 
-Many libraries still rely on manual record-keeping: book availability isn't visible in real time, reservations go unchecked, and staff spend too much time on admin. This system automates:
-
-- Book search and reservation
-- Different borrowing limits for students and staff
-- Automatic expiry of unclaimed reservations after **48 hours**
-- Real-time inventory updates and a full transaction log for accountability
-
----
-
-## 🧩 What I designed
-
-**Requirements**
-- 21 functional requirements across users, librarians and the system (e.g. borrowing-limit enforcement, librarian overrides, notifications)
-- Non-functional requirements: extensibility, usability, efficiency
-- Use case diagrams and detailed use case descriptions (Reserve Book, Borrow Book)
-
-**UML models** (created in draw.io)
-
-| Type | Diagrams |
+## Tools and skills used
+| Area | Excel features |
 |---|---|
-| Structure | Analysis class diagram, design class diagram, ER diagram, package diagram |
-| Behaviour | Sequence, communication and design-time interaction diagrams |
-| State | Reservation and Book state charts |
-| Deployment | Component and deployment diagrams |
+| Setup | Excel Tables, structured references, Freeze Panes |
+| Data cleaning | Remove Duplicates, TRIM, PROPER, SUBSTITUTE, Find & Replace, EXACT checks, Number Filters, ROUND |
+| Analysis | SUM, AVERAGE, COUNTA, MIN, MAX, SUMIFS, COUNTIFS, UNIQUE, SORT |
+| Dates | YEAR, MONTH, TEXT, DATE, year-over-year growth % |
+| Summaries | PivotTables, PivotCharts |
+| Dashboard | KPI cards linked to analysis, Slicers with Report Connections |
 
-**Architecture:** layered MVC (Controller → Service → Repository → DataStore)
-
-![Design class diagram](design-class-diagram.png)
-
----
-
-## 🏗️ Design patterns applied
-
-| Pattern | Where it's used | Why |
+## Data cleaning (documented in the `Cleaning_Log` sheet)
+| Problem | Fix | Rows |
 |---|---|---|
-| **MVC** | Whole system | Separates UI, business logic and data for maintainability |
-| **Repository** | User, Book, Reservation repositories | Hides storage details, so files can later be swapped for a database |
-| **Singleton** | Central DataStore | One shared, consistent source of data |
-| **Factory Method** | Reservation creation | Centralises object creation and reduces duplication |
-| **Strategy** | Book search (title, author, category) | Search methods can be swapped at runtime |
-| **Observer** | Notifications | Email/SMS services are notified automatically when a reservation is confirmed, cancelled or expires |
+| Duplicate orders | Remove Duplicates | 45 removed |
+| Inconsistent text (case, extra spaces) in Gender, Region, City, Category, Payment_Method, Order_Status | TRIM + PROPER (+ SUBSTITUTE), blanks → "Unknown" | 6 columns standardised |
+| Impossible ages (4, 15, 112) | Cleared the values | 3 |
+| Negative quantity | Deleted rows | 8 |
+| Discount over 100% | Deleted row | 1 |
+| Sales ≠ Unit_Price × Quantity × (1 − Discount) | Recalculated with ROUND | 12 fixed |
 
----
+**Result:** 18,045 → **17,991 clean orders**
 
-## 💻 Java prototype
-
-`src/LibrarySystem.java` is a working console application that implements the core features of the design:
-
-- **Login** for students/staff and librarians (role-based menus)
-- **Search** books by title, author or ID
-- **Reserve** and cancel reservations, with a **FIFO queue** per book and **automatic 48-hour expiry**
-- **Borrow** and return books, with a **borrowing limit** (5 books per user) and reservation-queue priority checks
-- **Librarian tools:** add, update and remove books (removal blocked while loans are active), view all loans and reservation queues
-
-The prototype keeps everything in one file with in-memory storage, to focus on the business rules. The full layered architecture and design patterns are specified in the design report.
-
-**Run it** (Java 11 or later):
-
-```bash
-javac -d out src/LibrarySystem.java
-java -cp out LibrarySystem
-```
-
-**Sample logins:** student `U001` or `U002`; librarian `L001` (password `admin`)
-
----
-
-## 🔄 Process
-
-Followed an **Agile** approach with weekly sprints, tracked on a **GitHub Scrum board**: each sprint focused on specific deliverables (use cases, class diagrams, sequence diagrams), then refined earlier models in the next iteration.
-
----
-
-## 🗂️ Files
-
-| File | Description |
+## Key results
+| KPI | Value |
 |---|---|
-| `src/LibrarySystem.java` | Java console prototype |
-| `software-design-report.pdf` | Full design report with all diagrams, patterns, code fragments and critique |
-| `design-class-diagram.png` | Layered design class diagram |
+| Total Sales | 11,552,491.79 |
+| Total Profit | 2,836,592.90 |
+| Profit Margin | 24.6% |
+| Orders | 17,991 |
+| Average Sale | 642.13 |
 
-## 🛠️ Skills & tools
+## Insights
+1. **Electronics drives the business:** 7.49M, about **65% of all sales**. Furniture follows with 25%, Clothing 9% and Office Supplies 1%.
+2. **Order counts are almost equal across categories** (about 4,400–4,600 each), so differences in sales come from **price**, not how often customers buy.
+3. **Oceania is the top region** (3.05M); **North America has the highest margin** (24.7%).
+4. **Sales are flat over time:** 2.84M (2022) → 2.95M (+4.1%) → 2.82M (−4.3%) → 2.94M (+3.9%). The 2024 dip came mainly from Electronics.
+5. **2025 had the 2nd-highest sales but the lowest margin (23.8%)**, which is worth investigating (discounts or costs).
+6. **Busiest months:** July, December and January. **Quietest:** February and September. These are good candidates for promotions.
+7. **Margins are stable at about 24–25%** across every region and category.
 
-Object-Oriented Design · UML · Design Patterns · Software Architecture · Requirements Engineering · Agile · Java · draw.io
+## Workbook structure
+| Sheet | Purpose |
+|---|---|
+| Dashboard | KPI cards, charts and year slicer |
+| Analysis | Formula-based KPIs and tables by Region, Category, Year and Month |
+| Pivots / Pivot_Year | PivotTables and PivotCharts behind the dashboard |
+| Clean_Data | Cleaned data as an Excel Table (`Sales`) |
+| Raw_Data | Original data, untouched |
+| Cleaning_Log | Every cleaning step and the rows affected |
+
+## Repository files
+| File | What it is |
+|---|---|
+| `RetailPulseProject_v12.xlsx` | Final workbook (dashboard, analysis, pivots, clean data, cleaning log) |
+| `RetailPulse_Dashboard.png` | Dashboard screenshot |
+
+## How to use
+1. Download `RetailPulseProject_v12.xlsx`.
+2. Open it in Excel 365 (UNIQUE and SORT need Excel 365 or 2021+).
+3. Go to the **Dashboard** sheet and use the **Order_Year** slicer to filter the charts.
+
+## Author
+**Malleswari Kurva**
